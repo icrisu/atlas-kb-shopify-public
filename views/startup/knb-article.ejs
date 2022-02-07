@@ -1,0 +1,160 @@
+<% if (article) { %>
+    <% if (article.title && article.title !== '') { %>
+        {% assign page_title = "<%= article.title %>" %}
+    <% } %>
+    <% if (article.shortDescription && article.shortDescription !== '') { %>
+        {% assign page_description = "<%= article.shortDescription %>" %}
+    <% } %>
+<% } %>
+<script>
+    window.knbratingPath = "<%= `${apiRoot}${ajxPathPrefix}/set-rating${ajxQueryVars}` %>";
+    window.knbViewedPath = "<%= `${apiRoot}${ajxPathPrefix}/get-recently${ajxQueryVars}` %>";
+    window.knbMainPath = "<%= `${pathPrefix}` %>";
+    window.knbQuery = "<%= `${pathQueryVars}` %>";
+    window.knbrecentlyLabel = "<%= `${recentlyLabel}` %>";
+    <% if (article) { %>
+    window.knbArticle = "<%= `${article._id}` %>";
+    <% } %>
+</script>
+<link rel="stylesheet" type="text/css" href="<%= cssUrl %>">
+<link rel="stylesheet" type="text/css" href="<%= iconsCssUrl %>">
+<% if (settings.customCss && settings.customCss !== '') { %>
+    <style>
+        <%= settings.customCss %>
+    </style>
+<% } %>
+<% if (settings.customJSTop && settings.customJSTop !== '') { %>
+    <%- settings.customJSTop %>
+<% } %>
+<div class="startup-container">
+    <div class="knb-search-ui">
+        <% if (locales.title && locales.title !== '') { %>
+            <h1 class="knb-title"><%= locales.title %></h1>
+        <% } %>
+        <div class="search-imput-ui">
+            <div class="search-ui">
+                <div class="search-icon"><span class="unf-search"></span></div>
+                <form action="<%= `${pathPrefix}/search` %>" method="get">
+                    <input id="atlas-search-input" autocomplete="off" type="text" placeholder="<%= locales.searchPlaceholder %>" name="s" />
+                    <input style="display: none;" id="submit-form" type="submit" value="Submit">
+                </form>
+                <div class="knb-search-ui-jsx"><div class="knb-results-ajx"></div></div>
+            </div>
+        </div>
+    </div>
+    <div class="startup-container">
+        <div class="knb-inner-content-top">
+            <ul class="knb-nav">
+                <li><a href="<%= `${pathPrefix}${pathQueryVars}` %>"><%= locales.navAllCategories %></a></li>
+                <li><span class="unf-keyboard_arrow_right"></span></li>
+                <% if (article && article.category) { %>
+                    <li><a href="<%= `${pathPrefix}/${article.category.slug}/${pathQueryVars}` %>"><%= article.category.title %></a></li>
+                    <li><span class="unf-keyboard_arrow_right"></span></li>
+                <% } %>
+                <% if (article) { %>
+                    <li class="inactive"><%= article.title %></a></li>
+                <% } %>
+            </ul>
+            <div class="knb-inner-content-fill">
+
+                <div class="knb-category-content knb-category-content-fill">
+                    <div class="knb-main">
+                        <div class="knb-article-info-s">
+                            <div class="content">
+                                <h2 class="title"><%= article && article.title ? article.title : '' %></h2>
+                                <% if (article && article.shortDescription) { %>
+                                    <p class="short-description"><%= article.shortDescription %></p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <div class="article-separator article-single-separator"></div>
+
+                        <div class="article-content">
+                            <% if (article && article.content) { %>
+                                <%- article.content %>
+                            <% } %>
+                        </div>
+                        <div class="article-rating article-rating-s">
+                            <p class="q"><%= locales.ratingQuestion %></p>
+                            <div class="ratings">
+                                <div id="disappointed" class="rating disappointed">
+                                    <span id="disappointed-off" class="unf-sad-face1 unselected"></span>
+                                    <span id="disappointed-on" class="unf-sad-face selected"></span>
+                                </div>
+                                <div id="neutral" class="rating neutral">
+                                    <span id="neutral-off" class="unf-neutral-face1 unselected"></span>
+                                    <span id="neutral-on" class="unf-neutral-face selected"></span>
+                                </div>
+                                <div id="happy" class="rating happy">
+                                    <span id="happy-off" class="unf-smiling-face1 unselected"></span>
+                                    <span id="happy-on" class="unf-smiling-face selected"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div id="knb-sidebar" class="knb-sidebar">
+                        <% if (Array.isArray(latestVisited) && latestVisited.length > 0) { %>
+                            <div class="atlas_widget atlas_widget">
+                                <h3 class="atlas_widget-title"><%= locales.recentlyViewed %></h3>
+                                <% latestVisited.forEach(function(article){ %>
+                                    <a class="atlas-widget-link" href="<%= `${pathPrefix}/${article.catSlug}/${article.slug}${pathQueryVars}` %>">
+                                        <span class="unf-notebook icon"></span>
+                                        <span><%= article.title %></span>
+                                    </a>
+                                <% }); %>
+                            </div>
+                        <% } %>
+                        <% if (locales.popularArticle !== '' && Array.isArray(popularArticlesFInal) && popularArticlesFInal.length > 0) { %>
+                            <div class="atlas_widget atlas_widget">
+                                <h3 class="atlas_widget-title"><%= locales.popularArticle %></h3>
+                                <% popularArticlesFInal.forEach(function(article){ %>
+                                    <a class="atlas-widget-link" href="<%= `${pathPrefix}/${article.catSlug}/${article.slug}${pathQueryVars}` %>">
+                                        <span class="unf-notebook icon"></span>
+                                        <span><%= article.title %></span>
+                                    </a>
+                                <% }); %>
+                            </div>
+                        <% } %>
+
+                        <% if (settings.customWidgetCode !== '') { %>
+                            <div class="atlas_widget atlas_widget custom-widget"><%- settings.customWidgetCode %></div>
+                        <% } %>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <% if (settings.contactUrl !== '') { %>
+            <div class="contact-us-url"><a target="_blank" href="<%= settings.contactUrl %>"><%= settings.contactLabel %></a></div>
+        <% } %>
+        <% if (settings.linkedin !== '' || settings.facebook !== '' || settings.twitter !== '') { %>
+            <div class="social-ui">
+                <ul class="social-list">
+                    <% if (settings.linkedin !== '') { %>
+                        <li><a href="<%= settings.linkedin %>" target="_blank"><span class="unf-social-linkedin"></span></a></li>
+                    <% } %>
+                    <% if (settings.facebook !== '') { %>
+                        <li><a href="<%= settings.facebook %>" target="_blank"><span class="unf-social-facebook"></span></a></li>
+                    <% } %>
+                    <% if (settings.twitter !== '') { %>
+                        <li><a href="<%= settings.twitter %>" target="_blank"><span class="unf-social-twitter"></span></a></li>
+                    <% } %>
+                    <% if (settings.instagram !== '') { %>
+                        <li><a href="<%= settings.instagram %>" target="_blank"><span class="unf-instagram1"></span></a></li>
+                    <% } %>
+                </ul>
+            </div>
+        <% } %>
+    </div>
+</div>
+<script type="text/javascript" src="<%= jsUrl %>"></script>
+<% if (settings.customJSBottom && settings.customJSBottom !== '') { %>
+    <%- settings.customJSBottom %>
+<% } %>
+<% if (settings.isSearchAutocomplete && settings.isSearchAutocomplete !== '') { %>
+    <%- include('search-autocomplete'); %>
+<% } %>

@@ -1,0 +1,81 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+(function() {
+    jQuery('.search-ui').hover(function() {
+
+    }, function() {
+        jQuery('.knb-results-ajx').remove();
+    })
+
+    var resultsNotFound = "<%= locales.resultsNotFound %>";
+
+    function showResults(articles) {
+        hideResults();
+        if (!Array.isArray(articles)) {
+            return;
+        }
+
+        if (articles.length === 0) {
+            jQuery('<div class="knb-results-ajx"></div>').appendTo(jQuery('.knb-search-ui-jsx'));
+            jQuery(`<p class="knb-ajx-not-found">${resultsNotFound}</p>`).appendTo(jQuery('.knb-results-ajx'));
+            return;
+            return hideResults();
+        }
+        var articlesHtml = '';
+        var pathPrefix = "<%= pathPrefix %>";
+        var pathQueryVars = "<%= pathQueryVars %>";
+        for (let i = 0; i < articles.length; i++) {
+            const article = articles[i];
+            var catSlug = "";
+            if (Array.isArray(article.categories) && article.categories.length > 0) {
+                catSlug = article.categories[0].slug;
+            }
+            var cls = `article-link${ i < articles.length - 1 ? ' border-btn' : '' }`;
+            articlesHtml += `<a href="${pathPrefix}/${catSlug}/${article.slug}${pathQueryVars}" class="${cls}">`;
+            articlesHtml += `<div class="article-link-title">${article.title}</div>`;
+            articlesHtml += `<div class="article-link-short-description">${article.shortDescription}</div>`;
+            articlesHtml += '</a>';
+        }
+        jQuery('<div class="knb-results-ajx"></div>').appendTo(jQuery('.knb-search-ui-jsx'));
+        jQuery(articlesHtml).appendTo(jQuery('.knb-results-ajx'));
+    }
+
+    function hideResults() {
+        jQuery('.knb-results-ajx').remove();
+    }
+
+    function atls_debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    };
+    jQuery(document).ready(function() {
+            var _atls_debounce = atls_debounce(function() {
+                if (jQuery('#atlas-search-input').val() === '' || jQuery('#atlas-search-input').val().length < 3) {
+                    hideResults();
+                    return;
+                }
+                jQuery.post("<%= `${pathPrefix}/search-ajx?shop=${shop}` %>", {
+                    s: jQuery('#atlas-search-input').val()
+                }, function(data, status) {
+                    if (data && data.articles) {
+                        showResults(data.articles);
+                    }
+                });
+
+            }, 350);
+        jQuery('#atlas-search-input').keyup(function() {
+            _atls_debounce();
+        })
+    });
+})();
+</script>

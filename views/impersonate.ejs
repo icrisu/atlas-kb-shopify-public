@@ -1,0 +1,40 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Hive impersonate</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="js/jquery3.3.1.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var adminLocalStorageKey = "admin_storage_imp_s";
+        jQuery( document ).ready(function() {
+            jQuery('#token').val(localStorage.getItem(adminLocalStorageKey));
+            jQuery('#save').click(function(e) {
+                e.preventDefault();
+                if (jQuery('#token').val() === '') {
+                    alert('paste u re token');
+                } else {
+                    localStorage.setItem(adminLocalStorageKey, jQuery('#token').val());
+                }
+            });
+            jQuery('#remove').click(function(e) {
+                e.preventDefault();
+                localStorage.setItem(adminLocalStorageKey, '');
+                jQuery('#token').val('');
+            });            
+        });
+    </script>
+</head>
+
+<body>
+    <p>Paste you're impersonate token</p>
+    <input id="token" type="text" style="width: 50%;" />
+    <br /><br />
+    <a id="save" href="#">Save token</a><br /><br />
+    <a id="remove" href="#">Remove token</a>
+</body>
+
+</html>

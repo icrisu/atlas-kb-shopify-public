@@ -1,0 +1,105 @@
+<% if (Array.isArray(categories) && categories.length > 0) { %>
+    <% if (categories[0].title && categories[0].title !== '') { %>
+        {% assign page_title = "<%= categories[0].title %>" %}
+    <% } %>
+    <% if (categories[0].shortDescription && categories[0].shortDescription !== '') { %>
+        {% assign page_description = "<%= categories[0].shortDescription %>" %}
+    <% } %>
+<% } %>
+<link rel="stylesheet" type="text/css" href="<%= cssUrl %>">
+<link rel="stylesheet" type="text/css" href="<%= iconsCssUrl %>">
+<% if (settings.customCss && settings.customCss !== '') { %>
+    <style>
+        <%= settings.customCss %>
+    </style>
+<% } %>
+<% if (settings.customJSTop && settings.customJSTop !== '') { %>
+    <%- settings.customJSTop %>
+<% } %>
+<div class="knb-container">
+    <div class="search-ui">
+        <div class="search-icon"><span class="unf-search"></span></div>
+        <form action="<%= `${pathPrefix}/search` %>" method="get">
+            <input type="text" id="atlas-search-input" autocomplete="off" placeholder="<%= locales.searchPlaceholder %>" name="s" />
+            <input style="display: none;" id="submit-form" type="submit" value="Submit">
+        </form>
+        <div class="knb-search-ui-jsx"><div class="knb-results-ajx"></div></div>
+    </div>
+    <ul class="knb-nav">
+        <li><a href="<%= `${pathPrefix}${pathQueryVars}` %>"><%= locales.navAllCategories %></a></li>
+        <li><span class="unf-keyboard_arrow_right"></span></li>
+        <% if (categories.length > 0) { %>
+            <li class="inactive"><%= categories[0].title %></a></li>
+        <% } %>
+    </ul>
+    <div class="knb-category-single">
+        <div class="knb-category-content">
+            <% if (categories.length > 0) { %>
+                <% var category = categories[0]; var articles = categories[0].articles; %>
+                <div class="knb-category-info">
+                    <% if (category.customIcon) { %>
+                        <div class="icon"><img src="<%= category.customIcon %>" alt="" /></div>
+                    <% } %>
+                    <% if (!category.customIcon && category.icon) { %>
+                        <div class="icon <%= category.icon ? 'atls-category-font-icon' : '' %>"><span class="<%= category.icon %>" style="color: <%= (category.categoryColor) ? category.categoryColor : '#818a96' %>"></span></div>
+                    <% } %>
+                    <div class="content">
+                        <h2 class="title" href=#><%= category.title %></h2>
+                        <% if (category.shortDescription) { %>
+                            <p class="short-description"><%= category.shortDescription %></p>
+                        <% } %>
+                        <% if (category.articlesFound) { %>
+                            <p class="articles-found"><%= category.articlesFound %></p>
+                        <% } %>
+                    </div>
+                </div>
+                <div class="category-articles">
+                    <% var count = 0; %>
+                    <% articles.forEach(function(article){ %>
+                        <% count++ %>
+                        <a href="<%= `${pathPrefix}/${category.slug}/${article.slug}${pathQueryVars}` %>" class="article-list-item">
+                            <h2 class="title" href=#><%= article.title %></h2>
+                            <% if (article.shortDescription) { %>
+                                <p class="short-description"><%= article.shortDescription %></p>
+                            <% } %>
+                            <div class="read-more"><span><%= locales.articleReadMore %></span></div>
+                        </a>
+                        <% if (count < articles.length) { %>
+                            <div class="separator"></div>
+                        <% } %>
+                    <% }); %>
+                </div>
+            <% } %>
+            <% if (categories.length === 0) { %>
+                <p class="not-found"><%= locales.categoryNotFound %></p>
+            <% } %>
+        </div>
+        <% if (settings.contactUrl !== '') { %>
+            <div class="contact-us-url"><a target="_blank" href="<%= settings.contactUrl %>"><%= settings.contactLabel %></a></div>
+        <% } %>
+        <% if (settings.linkedin !== '' || settings.facebook !== '' || settings.twitter !== '') { %>
+            <div class="social-ui">
+                <ul class="social-list">
+                    <% if (settings.linkedin !== '') { %>
+                        <li><a href="<%= settings.linkedin %>" target="_blank"><span class="unf-social-linkedin"></span></a></li>
+                    <% } %>
+                    <% if (settings.facebook !== '') { %>
+                        <li><a href="<%= settings.facebook %>" target="_blank"><span class="unf-social-facebook"></span></a></li>
+                    <% } %>
+                    <% if (settings.twitter !== '') { %>
+                        <li><a href="<%= settings.twitter %>" target="_blank"><span class="unf-social-twitter"></span></a></li>
+                    <% } %>
+                    <% if (settings.instagram !== '') { %>
+                        <li><a href="<%= settings.instagram %>" target="_blank"><span class="unf-instagram1"></span></a></li>
+                    <% } %>
+                </ul>
+            </div>
+        <% } %>
+    </div>
+</div>
+<% if (settings.customJSBottom && settings.customJSBottom !== '') { %>
+    <%- settings.customJSBottom %>
+<% } %>
+<% if (settings.isSearchAutocomplete && settings.isSearchAutocomplete !== '') { %>
+    <%- include('startup/search-autocomplete'); %>
+<% } %>
